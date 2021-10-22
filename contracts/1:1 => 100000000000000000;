@@ -1,0 +1,21 @@
+1:1 => 100000000000000000;
+totalSupplyOfXpilot = 100000000000000000;
+balance of Stakeable contrac = 100000000000000000;
+
+
+2) Send 200000000000000000 to Stakeable contract
+totalSupplyOfXpilot = 100000000000000000;
+balance of Stakeable contrac = 300000000000000000;
+
+3) Stake again
+Amount to stake = 200000000000000000;
+totalSupplyOfXpilot = 100000000000000000;
+balance of Stakeable contract for pilot = 1100000000000000000;
+ratio = 1100000000000000000/100000000000000000 = 11
+mint(11 * 200000000000000000) = 600000000000000000
+
+
+
+
+
+

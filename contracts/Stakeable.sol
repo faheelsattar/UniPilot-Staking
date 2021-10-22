@@ -1,48 +1,72 @@
-pragma solidity ^0.8.4;
-import "./XPilot.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+pragma solidity ^0.8.6;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-contract Stakebale {
+contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
+    using SafeMath for uint256;
     IERC20 public pilot;
-    XPilot public xPilot;
 
-    mapping(address => uint256) internal pilotStaked;
-    mapping(address => uint256) internal xPilotStaked;
+    mapping(address => uint256) public stakedPilot;
+    mapping(address => uint256) public stakedXPilot;
+    mapping(address => bool) public boosterReward;
 
-    event Staked(address indexed user, uint256 amount);
-
-    constructor(IERC20 _pilot, XPilot _xPilot) {
+    constructor(IERC20 _pilot) {
         pilot = _pilot;
-        xPilot = _xPilot;
     }
 
-    function _stakePilot(uint256 _amount, address user) private {
-        require(_amount > 0, "Cannot stake nothing");
-        pilotStaked[user] += _amount;
-        xPilot.mint(user, _amount);
-        emit Staked(user, _amount);
+    // modifier onlyMinter() {
+    //     require(msg.sender == address(this), "XPILOT:: NOT_MINTER");
+    //     _;
+    // }
+
+    function mint(address to, uint256 value) internal {
+        _mint(to, value);
     }
 
-    function _stakeXPilot(uint256 _amount, address user) private {
-        require(_amount > 0, "Cannot stake nothing");
-        xPilotStaked[user] += _amount;
-        //we will need to call Farming contract to update and add the booster reward in block reward
-        emit Staked(user, _amount);
+    function burn(uint256 _amount) public override {
+        burn(_amount);
     }
 
-    function stakePilot(uint256 _amount) public {
-        require(_amount <= pilot.balanceOf(msg.sender), "Balance cant be less then amount");
-        uint256 amountHldr = _amount;
-        _amount = 0;
-        _stakePilot(amountHldr, msg.sender);
-        pilot.transferFrom(msg.sender, address(this), amountHldr);
+    function stake(uint256 _amount, address _tokenAddress) external {
+        if (_tokenAddress == address(pilot)) {
+            uint256 balanceUser = pilot.balanceOf(msg.sender);
+            require(_amount <= balanceUser, "insufficient balance");
+            // uint256 totalPilot = pilot.balanceOf(address(this));
+            uint256 totalSupplyXpilot = totalSupply();
+            if (totalSupplyXpilot == 0) {
+                mint(msg.sender, _amount);
+            } else {
+                uint256 ratio = IERC20(address(pilot)).balanceOf(address(this)).div(totalSupplyXpilot);
+                uint256 what = ratio.mul(_amount);
+                mint(msg.sender, what);
+            }
+            stakedPilot[msg.sender] = _amount;
+            pilot.transferFrom(msg.sender, address(this), _amount);
+        } else {
+            uint256 balanceUser = balanceOf(msg.sender);
+            require(_amount <= balanceUser, "insufficient balance");
+            stakedXPilot[msg.sender] += _amount;
+            boosterReward[msg.sender] = true;
+            transferFrom(msg.sender, address(this), _amount);
+        }
     }
 
-    function stakeXPilot(uint256 _amount) public {
-        require(_amount <= xPilot.balanceOf(msg.sender), "Balance cant be less then amount");
-        uint256 amountHldr = _amount;
-        _amount = 0;
-        _stakeXPilot(amountHldr, msg.sender);
-        xPilot.transferFrom(msg.sender, address(this), amountHldr);
+    function unStake(uint256 _share, address _tokenAddress) public {
+        if (_tokenAddress == address(pilot)) {
+            uint256 pilotStaked = stakedPilot[msg.sender];
+            require(_share <= pilotStaked, "Cant unstake amount more then staked");
+            uint256 totalSupply = totalSupply();
+            uint256 ratio = IERC20(address(pilot)).balanceOf(address(this)).div(totalSupply);
+            uint256 what = ratio.mul(_share);
+            stakedPilot[msg.sender] -= _share;
+            pilot.transfer(msg.sender, what);
+            burn(_share);
+        } else {
+            uint256 pilotXStaked = stakedXPilot[msg.sender];
+            require(_share <= pilotXStaked, "Cant unstake amount more then staked");
+            stakedXPilot[msg.sender] -= _share;
+            transfer(msg.sender, _share);
+        }
     }
 }
