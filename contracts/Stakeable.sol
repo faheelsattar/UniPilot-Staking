@@ -51,7 +51,7 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
     function unStake(uint256 _share, address _tokenAddress) public {
         if (_tokenAddress == address(pilot)) {
             uint256 pilotStaked = stakedPilot[msg.sender];
-            require(_share <= pilotStaked, "Cant unstake amount more then staked");
+            require(_share <= pilotStaked, "Cant unstake amount");
             uint256 totalSupply = totalSupply();
             uint256 ratio = IERC20(address(pilot)).balanceOf(address(this)).div(totalSupply);
             uint256 what = ratio.mul(_share);
@@ -60,7 +60,7 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
             burn(_share);
         } else {
             uint256 pilotXStaked = stakedXPilot[msg.sender];
-            require(_share <= pilotXStaked, "Cant unstake amount more then staked");
+            require(_share <= pilotXStaked, "Cant unstake amount");
             stakedXPilot[msg.sender] = stakedXPilot[msg.sender].sub(_share);
             transfer(msg.sender, _share);
         }
