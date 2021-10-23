@@ -37,7 +37,7 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
                 uint256 what = ratio.mul(_amount);
                 mint(msg.sender, what);
             }
-            stakedPilot[msg.sender] = _amount;
+            stakedPilot[msg.sender] = stakedPilot[msg.sender].add(_amount);
             pilot.transferFrom(msg.sender, address(this), _amount);
         } else {
             uint256 balanceUser = balanceOf(msg.sender);

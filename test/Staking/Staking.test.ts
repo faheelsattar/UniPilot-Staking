@@ -3,7 +3,10 @@ import chai, { expect, use } from "chai";
 import { Contract, BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { parseUnits } from "ethers/lib/utils";
-import Stakeable from "../artifacts/contracts/Stakeable.sol/Stakeable.json";
+import Stakeable from "../../artifacts/contracts/Stakeable.sol/Stakeable.json";
+import { solidity } from "ethereum-waffle";
+
+use(solidity);
 
 describe("TESTING SKELETON", async () => {
   let stakeable: Contract;
@@ -12,15 +15,11 @@ describe("TESTING SKELETON", async () => {
   beforeEach(async () => {
     const StakeableContract = await ethers.getContractFactory("Stakeable");
     stakeable = await StakeableContract.deploy("0x39491EE11ECAe251e9649Af6635bc23F13BEfE63");
-    await Promise.all([
-      stakeable.mint(owner.address, pilotAmount),
-      stakeable.mint(alice.address, pilotAmount),
-      stakeable.mint(bob.address, pilotAmount),
-    ]);
   });
 
   describe("Init", async () => {
     it("should initialize", async () => {
+      console.log("shoul initialize", stakeable);
       expect(stakeable).to.be.ok;
     });
   });

@@ -23,7 +23,7 @@ import "@nomiclabs/hardhat-ethers";
 const web3 = new Web3("https://rinkeby.infura.io/v3/98d49364a6d6475e842e7a63341ca0bf");
 const contractStakeable = new web3.eth.Contract(
   StakeableArtifact.abi as AbiItem[],
-  "0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18",
+  "0x0ccfAF5a67EAe4D435485829351c4B322A823E5b",
 );
 
 let wallet: Wallet;
@@ -51,10 +51,10 @@ const deployStakeable = async () => {
   console.log("Stakeable deployed to:", Stakeable.address, "from account,", wallet.address);
 };
 
-async function getPILOTApproval(tokenAddress: string, spenderAddress: string): Promise<void> {
+async function getPILOTApproval(tokenAddress: string, spenderAddress: string, tokenAmount: string): Promise<void> {
   const tokenContract = new ContractFactory(PilotArtifact.abi, PilotArtifact.bytecode, wallet2);
   const tokenContractInstance = tokenContract.attach(tokenAddress);
-  const approval = await tokenContractInstance.approve(spenderAddress, "100000000000000000", {
+  const approval = await tokenContractInstance.approve(spenderAddress, tokenAmount, {
     gasLimit: "10000000",
     gasPrice: "1500226581",
   });
@@ -137,16 +137,26 @@ const main = async () => {
   // await updateStateVariables();
   await updateStateVariables2();
   // await deployStakeable();
-  // await getPILOTApproval("0x39491EE11ECAe251e9649Af6635bc23F13BEfE63", "0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18");
+  // await getPILOTApproval(
+  //   "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
+  //   "0x0ccfAF5a67EAe4D435485829351c4B322A823E5b",
+  //   "4000000000000000000",
+  // );
 
-  await stakePilot(
-    "0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18",
-    "200000000000000000",
-    "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
-  );
-  await checkStakedValue("0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18");
-  await checkXPilotTotalSupply("0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18");
-  await checkPilotBalance("0x39491EE11ECAe251e9649Af6635bc23F13BEfE63", "0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18");
+  // await stakePilot(
+  //   "0x0ccfAF5a67EAe4D435485829351c4B322A823E5b",
+  //   "2000000000000000000",
+  //   "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
+  // );
+  // await checkStakedValue("0x0ccfAF5a67EAe4D435485829351c4B322A823E5b");
+  // await checkXPilotTotalSupply("0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18");
+  // await checkPilotBalance("0x39491EE11ECAe251e9649Af6635bc23F13BEfE63", "0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18");
+  // await unStakePilot(
+  //   "0x0ccfAF5a67EAe4D435485829351c4B322A823E5b",
+  //   "1000000000000000000",
+  //   "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
+  // );
+  // await checkStakedValue("0x0ccfAF5a67EAe4D435485829351c4B322A823E5b");
 };
 
 main()
