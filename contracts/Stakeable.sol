@@ -33,8 +33,8 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
             if (totalSupplyXpilot == 0) {
                 mint(msg.sender, _amount);
             } else {
-                uint256 ratio = IERC20(address(pilot)).balanceOf(address(this)).div(totalSupplyXpilot);
-                uint256 what = ratio.mul(_amount);
+                uint256 product = IERC20(address(pilot)).balanceOf(address(this)).mul(_amount);
+                uint256 what = product.div(totalSupplyXpilot);
                 mint(msg.sender, what);
             }
             stakedPilot[msg.sender] = stakedPilot[msg.sender].add(_amount);
@@ -52,9 +52,9 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
         if (_tokenAddress == address(pilot)) {
             uint256 pilotStaked = stakedPilot[msg.sender];
             require(_share <= pilotStaked, "Cant unstake amount");
-            uint256 totalSupply = totalSupply();
-            uint256 ratio = IERC20(address(pilot)).balanceOf(address(this)).div(totalSupply);
-            uint256 what = ratio.mul(_share);
+            uint256 totalSupplyXpilot = totalSupply();
+            uint256 product = IERC20(address(pilot)).balanceOf(address(this)).mul(_share);
+            uint256 what = product.div(totalSupplyXpilot);
             stakedPilot[msg.sender] = stakedPilot[msg.sender].sub(_share);
             pilot.transfer(msg.sender, what);
             burn(_share);
