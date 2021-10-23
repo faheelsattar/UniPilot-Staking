@@ -84,6 +84,20 @@ const stakePilot = async (contractAddress: string, amount: string, tokenAddress:
   }
 };
 
+const unStakePilot = async (contractAddress: string, share: string, tokenAddress: string) => {
+  const tokenContract = new ContractFactory(StakeableArtifact.abi, StakeableArtifact.bytecode, wallet2);
+  const tokenContractInstance = tokenContract.attach(contractAddress);
+  try {
+    const stake = await tokenContractInstance.unStake(share, tokenAddress, {
+      gasLimit: "10000000",
+      gasPrice: "1500226581",
+    });
+    console.log("staked pilot -> ", stake.hash);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const checkStakedValue = async (contractAddress: string) => {
   const tokenContract = new ContractFactory(StakeableArtifact.abi, StakeableArtifact.bytecode, wallet2);
   const tokenContractInstance = tokenContract.attach(contractAddress);
@@ -118,6 +132,7 @@ const checkPilotBalance = async (contractAddress: string, userAddress: string) =
     console.log(err);
   }
 };
+
 const main = async () => {
   // await updateStateVariables();
   await updateStateVariables2();

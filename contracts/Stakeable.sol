@@ -62,6 +62,7 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
             uint256 pilotXStaked = stakedXPilot[msg.sender];
             require(_share <= pilotXStaked, "Cant unstake amount");
             stakedXPilot[msg.sender] = stakedXPilot[msg.sender].sub(_share);
+            boosterReward[msg.sender] = false;
             transfer(msg.sender, _share);
         }
     }
