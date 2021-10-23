@@ -25,8 +25,8 @@ describe("TESTING SKELETON", async () => {
     });
   });
 
-  describe("DAI tests", async () => {
-    it("dai balance of owner", async () => {
+  describe("Staking tests", async () => {
+    it("balance of owner", async () => {
       const balance = await stakeable.balanceOf(owner.address);
       console.log("balance", balance);
       expect(balance).to.eq(ethers.utils.parseEther("1"));
