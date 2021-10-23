@@ -24,10 +24,6 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
         _mint(to, value);
     }
 
-    function burn(uint256 _amount) public override {
-        burn(_amount);
-    }
-
     function stake(uint256 _amount, address _tokenAddress) external {
         if (_tokenAddress == address(pilot)) {
             uint256 balanceUser = pilot.balanceOf(msg.sender);
