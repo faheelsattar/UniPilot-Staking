@@ -46,7 +46,7 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
         } else {
             uint256 balanceUser = balanceOf(msg.sender);
             require(_amount <= balanceUser, "insufficient balance");
-            stakedXPilot[msg.sender] += _amount;
+            stakedXPilot[msg.sender] = stakedXPilot[msg.sender].add(_amount);
             boosterReward[msg.sender] = true;
             transferFrom(msg.sender, address(this), _amount);
         }
@@ -59,13 +59,13 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
             uint256 totalSupply = totalSupply();
             uint256 ratio = IERC20(address(pilot)).balanceOf(address(this)).div(totalSupply);
             uint256 what = ratio.mul(_share);
-            stakedPilot[msg.sender] -= _share;
+            stakedPilot[msg.sender] = stakedPilot[msg.sender].sub(_share);
             pilot.transfer(msg.sender, what);
             burn(_share);
         } else {
             uint256 pilotXStaked = stakedXPilot[msg.sender];
             require(_share <= pilotXStaked, "Cant unstake amount more then staked");
-            stakedXPilot[msg.sender] -= _share;
+            stakedXPilot[msg.sender] = stakedXPilot[msg.sender].sub(_share);
             transfer(msg.sender, _share);
         }
     }
