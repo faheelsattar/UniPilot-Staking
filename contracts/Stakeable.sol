@@ -2,8 +2,9 @@ pragma solidity ^0.8.6;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "./interfaces/IStakeable.sol";
 
-contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
+contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable, IStakeable {
     using SafeMath for uint256;
     IERC20 public pilot;
 
@@ -24,7 +25,7 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
         _mint(to, value);
     }
 
-    function stake(uint256 _amount, address _tokenAddress) external {
+    function stake(uint256 _amount, address _tokenAddress) external override {
         if (_tokenAddress == address(pilot)) {
             uint256 balanceUser = pilot.balanceOf(msg.sender);
             require(_amount <= balanceUser, "insufficient balance");
@@ -33,7 +34,9 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
             if (totalSupplyXpilot == 0) {
                 mint(msg.sender, _amount);
             } else {
-                uint256 product = IERC20(address(pilot)).balanceOf(address(this)).mul(_amount);
+                uint256 product = IERC20(address(pilot)).balanceOf(address(this)).mul(
+                    _amount
+                );
                 uint256 what = product.div(totalSupplyXpilot);
                 mint(msg.sender, what);
             }
@@ -46,9 +49,10 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
             boosterReward[msg.sender] = true;
             transferFrom(msg.sender, address(this), _amount);
         }
+        emit Staked(_amount, _tokenAddress, msg.sender);
     }
 
-    function unStake(uint256 _share, address _tokenAddress) public {
+    function unStake(uint256 _share, address _tokenAddress) external override {
         if (_tokenAddress == address(pilot)) {
             uint256 pilotStaked = stakedPilot[msg.sender];
             require(_share <= pilotStaked, "Cant unstake amount");
@@ -68,5 +72,6 @@ contract Stakeable is ERC20("xp", "XP", 0), ERC20Burnable {
             }
             transfer(msg.sender, _share);
         }
+        emit UnStaked(_share, _tokenAddress, msg.sender);
     }
 }

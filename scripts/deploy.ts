@@ -31,14 +31,18 @@ let wallet2: Wallet;
 let privateKey: any = process.env.PRIVATE_KEY;
 let privateKey2: any = process.env.PRIVATE_KEY_2;
 async function updateStateVariables(): Promise<void> {
-  let provider = ethers.getDefaultProvider(`https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`);
+  let provider = ethers.getDefaultProvider(
+    `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+  );
   const _wallet = new ethers.Wallet(privateKey, provider);
   wallet = _wallet;
   console.log("wallet", wallet.address);
 }
 
 async function updateStateVariables2(): Promise<void> {
-  let provider = ethers.getDefaultProvider(`https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`);
+  let provider = ethers.getDefaultProvider(
+    `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+  );
   const _wallet = new ethers.Wallet(privateKey2, provider);
   wallet2 = _wallet;
   console.log("wallet", wallet2.address);
@@ -46,13 +50,32 @@ async function updateStateVariables2(): Promise<void> {
 // We recommend this pattern to be able to use async/await everywhere and properly handle errors.
 
 const deployStakeable = async () => {
-  const StakeableFactory = new ContractFactory(StakeableArtifact.abi, StakeableArtifact.bytecode, wallet);
-  const Stakeable = await StakeableFactory.deploy("0x39491EE11ECAe251e9649Af6635bc23F13BEfE63");
-  console.log("Stakeable deployed to:", Stakeable.address, "from account,", wallet.address);
+  const StakeableFactory = new ContractFactory(
+    StakeableArtifact.abi,
+    StakeableArtifact.bytecode,
+    wallet,
+  );
+  const Stakeable = await StakeableFactory.deploy(
+    "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
+  );
+  console.log(
+    "Stakeable deployed to:",
+    Stakeable.address,
+    "from account,",
+    wallet.address,
+  );
 };
 
-async function getPILOTApproval(tokenAddress: string, spenderAddress: string, tokenAmount: string): Promise<void> {
-  const tokenContract = new ContractFactory(PilotArtifact.abi, PilotArtifact.bytecode, wallet2);
+async function getPILOTApproval(
+  tokenAddress: string,
+  spenderAddress: string,
+  tokenAmount: string,
+): Promise<void> {
+  const tokenContract = new ContractFactory(
+    PilotArtifact.abi,
+    PilotArtifact.bytecode,
+    wallet2,
+  );
   const tokenContractInstance = tokenContract.attach(tokenAddress);
   const approval = await tokenContractInstance.approve(spenderAddress, tokenAmount, {
     gasLimit: "10000000",
@@ -70,8 +93,16 @@ async function getPILOTApproval(tokenAddress: string, spenderAddress: string, to
 //   console.log("Stakeable deployed to:", stakeable.address);
 // };
 
-const stakePilot = async (contractAddress: string, amount: string, tokenAddress: string) => {
-  const tokenContract = new ContractFactory(StakeableArtifact.abi, StakeableArtifact.bytecode, wallet2);
+const stakePilot = async (
+  contractAddress: string,
+  amount: string,
+  tokenAddress: string,
+) => {
+  const tokenContract = new ContractFactory(
+    StakeableArtifact.abi,
+    StakeableArtifact.bytecode,
+    wallet2,
+  );
   const tokenContractInstance = tokenContract.attach(contractAddress);
   try {
     const stake = await tokenContractInstance.stake(amount, tokenAddress, {
@@ -84,8 +115,16 @@ const stakePilot = async (contractAddress: string, amount: string, tokenAddress:
   }
 };
 
-const unStakePilot = async (contractAddress: string, share: string, tokenAddress: string) => {
-  const tokenContract = new ContractFactory(StakeableArtifact.abi, StakeableArtifact.bytecode, wallet2);
+const unStakePilot = async (
+  contractAddress: string,
+  share: string,
+  tokenAddress: string,
+) => {
+  const tokenContract = new ContractFactory(
+    StakeableArtifact.abi,
+    StakeableArtifact.bytecode,
+    wallet2,
+  );
   const tokenContractInstance = tokenContract.attach(contractAddress);
   try {
     const stake = await tokenContractInstance.unStake(share, tokenAddress, {
@@ -99,7 +138,11 @@ const unStakePilot = async (contractAddress: string, share: string, tokenAddress
 };
 
 const checkStakedValue = async (contractAddress: string) => {
-  const tokenContract = new ContractFactory(StakeableArtifact.abi, StakeableArtifact.bytecode, wallet2);
+  const tokenContract = new ContractFactory(
+    StakeableArtifact.abi,
+    StakeableArtifact.bytecode,
+    wallet2,
+  );
   const tokenContractInstance = tokenContract.attach(contractAddress);
   try {
     const stakedPilot = await tokenContractInstance.stakedPilot(wallet2.address);
@@ -112,7 +155,11 @@ const checkStakedValue = async (contractAddress: string) => {
 };
 
 const checkXPilotTotalSupply = async (contractAddress: string) => {
-  const tokenContract = new ContractFactory(StakeableArtifact.abi, StakeableArtifact.bytecode, wallet2);
+  const tokenContract = new ContractFactory(
+    StakeableArtifact.abi,
+    StakeableArtifact.bytecode,
+    wallet2,
+  );
   const tokenContractInstance = tokenContract.attach(contractAddress);
   try {
     const totalXPilot = await tokenContractInstance.totalSupply();
@@ -123,7 +170,11 @@ const checkXPilotTotalSupply = async (contractAddress: string) => {
 };
 
 const checkPilotBalance = async (contractAddress: string, userAddress: string) => {
-  const tokenContract = new ContractFactory(PilotArtifact.abi, PilotArtifact.bytecode, wallet2);
+  const tokenContract = new ContractFactory(
+    PilotArtifact.abi,
+    PilotArtifact.bytecode,
+    wallet2,
+  );
   const tokenContractInstance = tokenContract.attach(contractAddress);
   try {
     const balanceOf = await tokenContractInstance.balanceOf(userAddress);
@@ -145,7 +196,7 @@ const main = async () => {
 
   // await stakePilot(
   //   "0xBA16795882959B20A4B5a112E5a06735ED867077",
-  //   "2000000000000000000",
+  //   "3000000000000000000",
   //   "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
   // );
   // await checkStakedValue("0xBA16795882959B20A4B5a112E5a06735ED867077");
@@ -153,7 +204,7 @@ const main = async () => {
   // await checkPilotBalance("0x39491EE11ECAe251e9649Af6635bc23F13BEfE63", "0x58eFa082Bf5533f3E8dB56e3eD1d6af3A7068e18");
   await unStakePilot(
     "0xBA16795882959B20A4B5a112E5a06735ED867077",
-    "2000000000000000000",
+    "3000000000000000000",
     "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
   );
   // await checkStakedValue("0xBA16795882959B20A4B5a112E5a06735ED867077");

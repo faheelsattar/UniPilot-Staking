@@ -14,27 +14,24 @@ describe("TESTING SKELETON", async () => {
   const pilotAmount: BigNumber = ethers.utils.parseEther("1");
   beforeEach(async () => {
     const StakeableContract = await ethers.getContractFactory("Stakeable");
-    stakeable = await StakeableContract.deploy("0x39491EE11ECAe251e9649Af6635bc23F13BEfE63");
+    stakeable = await StakeableContract.deploy(
+      "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
+    );
   });
 
   describe("Init", async () => {
     it("should initialize", async () => {
-      console.log("shoul initialize", stakeable);
       expect(stakeable).to.be.ok;
     });
-  });
 
-  describe("Staking tests", async () => {
-    it("balance of owner", async () => {
-      const balance = await stakeable.balanceOf(owner.address);
-      console.log("balance", balance);
-      expect(balance).to.eq(ethers.utils.parseEther("1"));
-    });
-
-    it("total Supply", async () => {
-      const totalSupply = await stakeable.totalSupply();
-      console.log("total Supply", totalSupply);
-      expect(totalSupply).to.eq(ethers.utils.parseEther("1").mul(3));
+    it("Stake reversion test", async () => {
+      const stake = await stakeable
+        .connect(alice)
+        .stake(
+          ethers.utils.parseEther("1"),
+          "0x39491EE11ECAe251e9649Af6635bc23F13BEfE63",
+        );
+      expect(stake).to.be.revertedWith("insufficient balance");
     });
   });
 });
